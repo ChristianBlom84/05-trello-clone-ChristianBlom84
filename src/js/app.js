@@ -1,6 +1,6 @@
 import $ from 'jquery';
 
-// require('webpack-jquery-ui');
+require('webpack-jquery-ui');
 import '../css/styles.css';
 
 /**
@@ -74,12 +74,14 @@ const jtrello = (function() {
   // Init metod som körs först
   function init() {
     console.log(':::: Initializing JTrello ::::');
+    console.log('Testing 3');
     // Förslag på privata metoder
     captureDOMEls();
     createTabs();
     createDialogs();
 
     bindEvents();
+    $('.list').draggable({ snap: ".column" });;
   }
 
   // All kod här
