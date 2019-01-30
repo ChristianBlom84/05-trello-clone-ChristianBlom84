@@ -53,7 +53,7 @@ const jtrello = (function() {
   }
 
   function deleteList() {
-    console.log("This should delete the list you clicked on");
+    $(this).closest('.list').remove();
   }
 
   /* =========== Metoder för att hantera kort i listor nedan =========== */
@@ -63,7 +63,7 @@ const jtrello = (function() {
   }
 
   function deleteCard() {
-    console.log("This should delete the card you clicked on");
+    console.log(this);
   }
 
   // Metod för att rita ut element i DOM:en
@@ -74,17 +74,19 @@ const jtrello = (function() {
   // Init metod som körs först
   function init() {
     console.log(':::: Initializing JTrello ::::');
-    console.log('Testing 3');
+    console.log('Testing 4');
     // Förslag på privata metoder
     captureDOMEls();
     createTabs();
     createDialogs();
 
     bindEvents();
-    $('.list').draggable({ snap: ".column" });;
   }
 
   // All kod här
+  $('.list').draggable({ snap: ".column" });
+  $('.board').sortable();
+
   return {
     init: init
   };
