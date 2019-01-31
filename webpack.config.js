@@ -10,8 +10,8 @@ module.exports = {
     index:'./src/js/app.js'
   },
   output: {
-    path: path.resolve(__dirname, 'public'),
-    publicPath: "public/",
+    path: path.resolve(__dirname, './public'),
+    publicPath: "./",
     filename: "bundle.js",
     chunkFilename: '[name].js'
   },
@@ -36,7 +36,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'src/index.html'
+      template: './src/index.html'
     }),
     new webpack.ProvidePlugin({
         $: "jquery",
@@ -51,6 +51,7 @@ module.exports = {
   ],
   devServer: {
     contentBase: path.join(__dirname, 'public'),
+    publicPath: '/',
     compress: true,
     port: 3000
   }

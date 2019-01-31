@@ -20,6 +20,7 @@ const jtrello = (function() {
   function captureDOMEls() {
     DOM.$board = $('.board');
     DOM.$listDialog = $('#list-creation-dialog');
+    DOM.$newListForm = $('#list-creation-dialog > form');
     DOM.$columns = $('.column');
     DOM.$lists = $('.list');
     DOM.$cards = $('.card');
@@ -31,15 +32,31 @@ const jtrello = (function() {
     DOM.$deleteCardButton = $('.card > button.delete');
   }
 
+  function setupBoard() {
+    $('.board').sortable();
+    $('.list').sortable();
+  }
+
   function createTabs() {}
-  function createDialogs() {}
+  function createDialogs() {
+    $('#list-creation-dialog')
+      .dialog({
+        autoOpen: false,
+        position: {
+          my: "left top",
+          at: "left bottom",
+          of: "#new-list",
+        }
+      });
+  }
 
   /*
   *  Denna metod kommer nyttja variabeln DOM för att binda eventlyssnare till
   *  createList, deleteList, createCard och deleteCard etc.
   */
   function bindEvents() {
-    DOM.$newListButton.on('click', createList);
+    DOM.$newListButton.on('click', showCreateListDialog);
+    DOM.$newListForm.submit(createList);
     DOM.$deleteListButton.on('click', deleteList);
 
     DOM.$newCardForm.on('submit', createCard);
@@ -47,13 +64,46 @@ const jtrello = (function() {
   }
 
   /* ============== Metoder för att hantera listor nedan ============== */
-  function createList() {
+  function showCreateListDialog(event) {
     event.preventDefault();
-    console.log("This should create a new list");
+    // console.log(DOM.$newListForm);
+    $('#list-creation-dialog')
+      .dialog("open");
+  }
+
+  function createList(event) {
+    event.preventDefault();
+    $('#list-creation-dialog')
+      .dialog("close");
+    let inputs = this.elements;
+    let newList = `
+<div class="column">
+  <div class="list">
+      <div class="list-header">
+          ${inputs[0].value}
+          <button class="button delete">X</button>
+      </div>
+      <ul class="list-cards">
+          <li class="card">
+              New Card
+              <button class="button delete">X</button>
+          </li>
+          <li class="add-new">
+              <form class="new-card" action="index.html">
+                  <input type="text" name="title" placeholder="Please name the card" />
+                  <button class="button add">Add new card</button>
+              </form>
+          </li>
+      </ul>
+  </div>
+</div>`
+    $('.column').last().before(newList);
+    $('.list-header > button.delete').on('click', deleteList);
+    setupBoard();
   }
 
   function deleteList() {
-    $(this).closest('.list').remove();
+    $(this).closest('.column').remove();
   }
 
   /* =========== Metoder för att hantera kort i listor nedan =========== */
@@ -74,18 +124,15 @@ const jtrello = (function() {
   // Init metod som körs först
   function init() {
     console.log(':::: Initializing JTrello ::::');
-    console.log('Testing 4');
     // Förslag på privata metoder
     captureDOMEls();
     createTabs();
     createDialogs();
-
+    setupBoard();
     bindEvents();
   }
 
   // All kod här
-  $('.list').draggable({ snap: ".column" });
-  $('.board').sortable();
 
   return {
     init: init
