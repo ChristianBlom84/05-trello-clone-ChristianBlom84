@@ -33,11 +33,51 @@ const jtrello = (function() {
   }
 
   function setupBoard() {
-    $('.board').sortable();
-    $('.list').sortable();
+    $('div.column').sortable({
+      connectWith: 'div.column'
+    });
+
+    // var droppableParent;
+	
+    // $('.list').draggable({
+    //   revert: 'invalid',
+    //   revertDuration: 200,
+    //   start: function () {
+    //     droppableParent = $(this).parent();
+      
+    //     $(this).addClass('being-dragged');
+    //   },
+    //   stop: function () {
+    //     $(this).removeClass('being-dragged');
+    //   }
+    // });
+	
+    // $('.column').droppable({
+    //   tolerance: 'touch',
+    //   hoverClass: 'drop-hover',
+    //   drop: function (event, ui) {
+    //     var draggable = $(ui.draggable[0]),
+    //       draggableOffset = draggable.offset(),
+    //       container = $(event.target),
+    //       containerOffset = container.offset();
+        
+    //     $('.list', event.target).appendTo(droppableParent).css({opacity: 0}).animate({opacity: 1}, 200);
+        
+    //     draggable.appendTo(container).css({left: draggableOffset.left - containerOffset.left, top: draggableOffset.top - containerOffset.top}).animate({left: 0, top: 0}, 200);
+    //   }
+    // });
+  
+
+    $('.list-cards').sortable({
+      connectWith: '.list-cards'
+    });
+
+    $('#datepicker').datepicker();
   }
 
-  function createTabs() {}
+  function createTabs() {
+    $('#tabs').tabs();
+  }
   function createDialogs() {
     $('#list-creation-dialog')
       .dialog({
@@ -46,8 +86,21 @@ const jtrello = (function() {
           my: "left top",
           at: "left bottom",
           of: "#new-list",
-        }
+        },
+        show: 'slide',
+        hide: 'explode'
       });
+    
+    $("#card-dialog")
+      .dialog({
+        autoOpen: false,
+        hide: 'fold',
+        show: 'blind',
+        close: function() {
+          $('#tabs-1').empty();
+          // $('#tabs-2').empty();
+        }
+      })
   }
 
   /*
@@ -61,12 +114,22 @@ const jtrello = (function() {
 
     DOM.$newCardForm.on('submit', createCard);
     DOM.$deleteCardButton.on('click', deleteCard);
+    DOM.$cards.on('click', showCard);
+  }
+
+  function rebindEvents(event) {
+    console.log(event);
+    $('.list-header > button.delete').on('click', deleteList);
+    $('.card > button.delete').on('click', deleteCard);
+    $('form.new-card').unbind();
+    $('form.new-card').on('click', createCard);
+    $('.card').unbind();
+    $('.card').on('click', showCard);
   }
 
   /* ============== Metoder för att hantera listor nedan ============== */
   function showCreateListDialog(event) {
     event.preventDefault();
-    // console.log(DOM.$newListForm);
     $('#list-creation-dialog')
       .dialog("open");
   }
@@ -75,31 +138,35 @@ const jtrello = (function() {
     event.preventDefault();
     $('#list-creation-dialog')
       .dialog("close");
-    let inputs = this.elements;
+    let listName = this.elements[0].value;
     let newList = `
-<div class="column">
-  <div class="list">
-      <div class="list-header">
-          ${inputs[0].value}
-          <button class="button delete">X</button>
-      </div>
-      <ul class="list-cards">
-          <li class="card">
-              New Card
+    <div class="column">
+      <div class="list">
+          <div class="list-header">
+              ${listName}
               <button class="button delete">X</button>
-          </li>
-          <li class="add-new">
-              <form class="new-card" action="index.html">
-                  <input type="text" name="title" placeholder="Please name the card" />
-                  <button class="button add">Add new card</button>
-              </form>
-          </li>
-      </ul>
-  </div>
-</div>`
-    $('.column').last().before(newList);
-    $('.list-header > button.delete').on('click', deleteList);
+          </div>
+          <ul class="list-cards">
+              <li class="card">
+                  <span class="card-content">New Card</span>
+                  <span class="card-date"></span>
+                  <button class="button delete">X</button>
+              </li>
+              <li class="add-new">
+                  <form class="new-card" action="index.html">
+                      <input type="text" name="title" placeholder="Please name the card" />
+                      <button class="button add">Add new card</button>
+                  </form>
+              </li>
+          </ul>
+      </div>
+    </div>`
+
+    if (listName) {    
+      $('.column').last().after(newList);
+    }
     setupBoard();
+    rebindEvents(event);
   }
 
   function deleteList() {
@@ -109,11 +176,34 @@ const jtrello = (function() {
   /* =========== Metoder för att hantera kort i listor nedan =========== */
   function createCard(event) {
     event.preventDefault();
-    console.log("This should create a new card");
+    let cardName = this.elements[0].value;
+    let newCard = `
+    <li class="card">
+      <span class="card-content">${cardName}</span>
+      <span class="card-date"></span>
+      <button class="button delete">X</button>
+    </li>`
+    if (cardName) {
+      $(this).closest('li').before(newCard);
+    }
+    rebindEvents(event);
   }
 
   function deleteCard() {
-    console.log(this);
+    $(this).closest('.card').remove();
+  }
+
+  function showCard(event) {
+    let cardDialog = $('#card-dialog');
+    console.log($(this));
+    let cardText = $(this.firstElementChild).text().trim();
+    let cardInput = $(`
+    <form class="edit-card-form">
+      <input type='text' name='edit-card' value='${cardText}' />
+    </form>`);
+
+    $('#tabs-1').append(cardInput);
+    cardDialog.dialog("open");
   }
 
   // Metod för att rita ut element i DOM:en

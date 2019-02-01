@@ -4,19 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <title>jQuery UI - Trello Clone (yay!)</title>
 </head>
 <body>
     <div class="board">
         <div class="column">
-            <div class="list">
+            <div id="list1" class="list">
                 <div class="list-header">
                     Todo
                     <button class="button delete">X</button>
                 </div>
                 <ul class="list-cards">
                     <li class="card">
-                        Card #1
+                        <span class="card-content">Card #1</span>
+                        <span class="card-date"></span>
                         <button class="button delete">X</button>
                     </li>
                     <li class="add-new">
@@ -36,7 +38,8 @@
                 </div>
                 <ul class="list-cards">
                     <li class="card">
-                        Card #2
+                        <span class="card-content">Card #2</span>
+                        <span class="card-date"></span>
                         <button class="button delete">X</button>
                     </li>
                     <li class="add-new">
@@ -56,7 +59,8 @@
                 </div>
                 <ul class="list-cards">
                     <li class="card">
-                        Card #3
+                        <span class="card-content">Card #3</span>
+                        <span class="card-date"></span>
                         <button class="button delete">X</button>
                     </li>
                     <li class="add-new">
@@ -68,7 +72,7 @@
                 </ul>
             </div>
         </div>
-        <div class="column">
+        <div class="new-list">
             <button id="new-list" class="button">Add new list</button>
         </div>
     </div>
@@ -78,6 +82,18 @@
         <form id="create-list-form"> 
             <input type="text" name="title" placeholder="List title" />
         </form>
+    </div>
+    <div id="card-dialog" title="Card Info">
+        <div id="tabs">
+            <ul>
+                <li><a href="#tabs-1">Card Text</a></li>
+                <li><a href="#tabs-2">Deadline</a></li>
+            </ul>
+            <div id="tabs-1"></div>
+            <div id="tabs-2">
+                <p>Deadline:<input type="text" id="datepicker"></p>
+            </div>
+        </div>
     </div>
 </body>
 </html>

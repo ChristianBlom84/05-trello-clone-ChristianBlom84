@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>jQuery UI - Trello Clone (yay!)</title>
-<link href="public/css/index.941d3ef46734b5af96c2.css" rel="stylesheet"></head>
+<link href="./css/index.5f8d3674f2cf46e9603b.css" rel="stylesheet"></head>
 <body>
     <div class="board">
         <div class="column">
@@ -18,6 +18,7 @@
                     <li class="card">
                         Card #1
                         <button class="button delete">X</button>
+                        <div id="card1" class="card-dialog">Test1</div>
                     </li>
                     <li class="add-new">
                         <form class="new-card" action="index.html">
@@ -38,6 +39,7 @@
                     <li class="card">
                         Card #2
                         <button class="button delete">X</button>
+                        <div id="card2" class="card-dialog">Test2</div>
                     </li>
                     <li class="add-new">
                         <form class="new-card" action="index.html">
@@ -58,6 +60,7 @@
                     <li class="card">
                         Card #3
                         <button class="button delete">X</button>
+                        <div id="card3" class="card-dialog">Test3</div>
                     </li>
                     <li class="add-new">
                         <form class="new-card" action="index.html">
@@ -68,15 +71,16 @@
                 </ul>
             </div>
         </div>
-        <div class="column">
+        <div class="new-list">
             <button id="new-list" class="button">Add new list</button>
         </div>
     </div>
+    
 
     <div id="list-creation-dialog" title="Create new list" style="height: 40px">
-        <form> 
+        <form id="create-list-form"> 
             <input type="text" name="title" placeholder="List title" />
         </form>
     </div>
-<script type="text/javascript" src="public/bundle.js"></script></body>
+<script type="text/javascript" src="./bundle.js"></script></body>
 </html>
