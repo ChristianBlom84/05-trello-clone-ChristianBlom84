@@ -121,6 +121,11 @@ input {
   height: 16px;
   position: relative;
   z-index: 0;
+  overflow: hidden;
+}
+
+.card-content {
+  margin-right: 2rem;
 }
 
 .card .button {

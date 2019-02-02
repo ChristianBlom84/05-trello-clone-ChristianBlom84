@@ -17,6 +17,23 @@ const jtrello = (function() {
   let DOM = {};
 
   /* =================== Privata metoder nedan ================= */
+  $.widget( "blom.bgcolor", {
+    _create: function() {
+        var bgColor = "red";
+        this.element
+            .css("background", bgColor);
+        this._on( this.element, {
+          click: "random"
+        });
+    },
+    random: function (event) {
+      var colorSelection = ['red', 'green', 'blue', 'cyan', 'grey', 'aliceblue'];
+      var bgColor = colorSelection[Math.floor(Math.random() * colorSelection.length)];
+      this.element
+        .css("background", bgColor);
+    }
+  });
+
   function captureDOMEls() {
     DOM.$board = $('.board');
     DOM.$listDialog = $('#list-creation-dialog');
@@ -30,12 +47,16 @@ const jtrello = (function() {
 
     DOM.$newCardForm = $('form.new-card');
     DOM.$deleteCardButton = $('.card > button.delete');
+    DOM.$cardDialog = $('#card-dialog');
+    DOM.$activeCard;
   }
 
   function setupBoard() {
     $('div.column').sortable({
       connectWith: 'div.column'
     });
+
+    $('.list').last().bgcolor();
 
     // var droppableParent;
 	
@@ -72,12 +93,18 @@ const jtrello = (function() {
       connectWith: '.list-cards'
     });
 
-    $('#datepicker').datepicker();
+    $('#datepicker').datepicker({
+      onSelect: function(dateText, instance) {
+        DOM.$activeCard.find('.card-date')
+          .text(dateText);
+      }
+    });
   }
 
   function createTabs() {
     $('#tabs').tabs();
   }
+
   function createDialogs() {
     $('#list-creation-dialog')
       .dialog({
@@ -118,11 +145,10 @@ const jtrello = (function() {
   }
 
   function rebindEvents(event) {
-    console.log(event);
     $('.list-header > button.delete').on('click', deleteList);
     $('.card > button.delete').on('click', deleteCard);
     $('form.new-card').unbind();
-    $('form.new-card').on('click', createCard);
+    $('form.new-card').on('submit', createCard);
     $('.card').unbind();
     $('.card').on('click', showCard);
   }
@@ -176,6 +202,7 @@ const jtrello = (function() {
   /* =========== Metoder för att hantera kort i listor nedan =========== */
   function createCard(event) {
     event.preventDefault();
+    let inputContent = $(this).find('input');
     let cardName = this.elements[0].value;
     let newCard = `
     <li class="card">
@@ -183,8 +210,10 @@ const jtrello = (function() {
       <span class="card-date"></span>
       <button class="button delete">X</button>
     </li>`
+
     if (cardName) {
       $(this).closest('li').before(newCard);
+      $(this).find('input').val('');
     }
     rebindEvents(event);
   }
@@ -194,16 +223,22 @@ const jtrello = (function() {
   }
 
   function showCard(event) {
-    let cardDialog = $('#card-dialog');
-    console.log($(this));
+    $('#tabs-1').empty();
+    DOM.$activeCard = $(this);
+    console.log(DOM.$activeCard.find(">:first-child").contents());
     let cardText = $(this.firstElementChild).text().trim();
     let cardInput = $(`
     <form class="edit-card-form">
-      <input type='text' name='edit-card' value='${cardText}' />
+      <textarea name='edit-card'>${cardText}</textarea>
+      <button type="submit">Update</button>
     </form>`);
 
     $('#tabs-1').append(cardInput);
-    cardDialog.dialog("open");
+    DOM.$cardDialog.dialog("open");
+    $('form.edit-card-form').on('submit', function(event) {
+      event.preventDefault();
+      DOM.$activeCard.find(">:first-child").text(event.currentTarget[0].value);
+    });
   }
 
   // Metod för att rita ut element i DOM:en

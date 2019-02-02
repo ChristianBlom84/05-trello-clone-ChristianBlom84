@@ -4,21 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <title>jQuery UI - Trello Clone (yay!)</title>
-<link href="./css/index.5f8d3674f2cf46e9603b.css" rel="stylesheet"></head>
+<link href="./css/index.06e63ff20c7861c89d8a.css" rel="stylesheet"></head>
 <body>
     <div class="board">
         <div class="column">
-            <div class="list">
+            <div id="list1" class="list">
                 <div class="list-header">
                     Todo
                     <button class="button delete">X</button>
                 </div>
                 <ul class="list-cards">
                     <li class="card">
-                        Card #1
+                        <span class="card-content">Card #1</span>
+                        <span class="card-date"></span>
                         <button class="button delete">X</button>
-                        <div id="card1" class="card-dialog">Test1</div>
                     </li>
                     <li class="add-new">
                         <form class="new-card" action="index.html">
@@ -37,9 +38,9 @@
                 </div>
                 <ul class="list-cards">
                     <li class="card">
-                        Card #2
+                        <span class="card-content">Card #2</span>
+                        <span class="card-date"></span>
                         <button class="button delete">X</button>
-                        <div id="card2" class="card-dialog">Test2</div>
                     </li>
                     <li class="add-new">
                         <form class="new-card" action="index.html">
@@ -58,9 +59,9 @@
                 </div>
                 <ul class="list-cards">
                     <li class="card">
-                        Card #3
+                        <span class="card-content">Card #3</span>
+                        <span class="card-date"></span>
                         <button class="button delete">X</button>
-                        <div id="card3" class="card-dialog">Test3</div>
                     </li>
                     <li class="add-new">
                         <form class="new-card" action="index.html">
@@ -81,6 +82,18 @@
         <form id="create-list-form"> 
             <input type="text" name="title" placeholder="List title" />
         </form>
+    </div>
+    <div id="card-dialog" title="Card Info">
+        <div id="tabs">
+            <ul>
+                <li><a href="#tabs-1">Card Text</a></li>
+                <li><a href="#tabs-2">Deadline</a></li>
+            </ul>
+            <div id="tabs-1"></div>
+            <div id="tabs-2">
+                <p>Deadline:<input type="text" id="datepicker"></p>
+            </div>
+        </div>
     </div>
 <script type="text/javascript" src="./bundle.js"></script></body>
 </html>
