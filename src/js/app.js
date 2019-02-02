@@ -15,8 +15,12 @@ const jtrello = (function() {
 
   // Referens internt i modulen för DOM element
   let DOM = {};
+  
+  let listsArray = localStorage.getItem('lists') ? JSON.parse(localStorage.getItem('lists')) : [];
+  let cardsArray = localStorage.getItem('cards') ? JSON.parse(localStorage.getItem('cards')) : [];
 
   /* =================== Privata metoder nedan ================= */
+  
   $.widget( "blom.bgcolor", {
     _create: function() {
         var bgColor = "red";
@@ -160,11 +164,7 @@ const jtrello = (function() {
       .dialog("open");
   }
 
-  function createList(event) {
-    event.preventDefault();
-    $('#list-creation-dialog')
-      .dialog("close");
-    let listName = this.elements[0].value;
+  function newList(listName) {
     let newList = `
     <div class="column">
       <div class="list">
@@ -188,15 +188,40 @@ const jtrello = (function() {
       </div>
     </div>`
 
-    if (listName) {    
+    if (listName) {
+      console.log(listsArray);
       $('.column').last().after(newList);
+      rebindEvents();
     }
+  }
+
+  function createList(event) {
+    event.preventDefault();
+    $('#list-creation-dialog')
+      .dialog("close");
+    let listName = this.elements[0].value;
+    
+    newList(listName);
     setupBoard();
     rebindEvents(event);
+    if (listName) {
+      listsArray.push(listName);
+      localStorage.setItem("lists", JSON.stringify(listsArray));
+    }
+    console.log(localStorage.getItem("lists"));
   }
 
   function deleteList() {
     $(this).closest('.column').remove();
+  }
+
+  function restoreLists() {
+    if (localStorage.getItem('lists')) {
+      const listData = JSON.parse(localStorage.getItem('lists'));
+      listData.forEach(list => {
+        newList(list);
+      })
+    }
   }
 
   /* =========== Metoder för att hantera kort i listor nedan =========== */
@@ -254,7 +279,9 @@ const jtrello = (function() {
     createTabs();
     createDialogs();
     setupBoard();
+    restoreLists();
     bindEvents();
+    // restoreCards();
   }
 
   // All kod här
