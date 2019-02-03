@@ -190,7 +190,6 @@ const jtrello = (function() {
     </div>`
 
     if (listName) {
-      console.log(listsArray);
       $('.column').last().after(newList);
       rebindEvents();
     }
@@ -235,16 +234,15 @@ const jtrello = (function() {
   }
 
   /* =========== Metoder för att hantera kort i listor nedan =========== */
-  function newCard(cardName) {
+  function newCard(cardName, listObject = null) {
     let newCard = `
     <li class="card">
       <span class="card-content">${cardName}</span>
       <span class="card-date"></span>
       <button class="button delete">X</button>
     </li>`
-
     if (cardName) {
-      $(this).closest('li').before(newCard);
+      $(listObject).closest('li.add-new').before(newCard);
       rebindEvents();
     }
   }
@@ -253,11 +251,11 @@ const jtrello = (function() {
     event.preventDefault();
     let inputContent = $(this).find('input');
     let cardName = this.elements[0].value;
-    newCard(cardName);
+    newCard(cardName, $(this));
     if (cardName) {
-      $(this).find('input').val('');
-      console.log($(this).closest('.list').find('.list-title'));
-      // cardsObject.listName
+      $(inputContent).val('');
+      let listName = $(this).closest('.list').find('.list-title').text();
+      cardsObject[listName] = cardName;
       localStorage.setItem("cards", JSON.stringify(cardsObject));
     }
     rebindEvents(event);
@@ -265,12 +263,13 @@ const jtrello = (function() {
 
   function deleteCard() {
     $(this).closest('.card').remove();
+    let localCards = JSON.parse(localStorage.getItem('cards'));
+    console.log(localCards);
   }
 
   function showCard(event) {
     $('#tabs-1').empty();
     DOM.$activeCard = $(this);
-    console.log(DOM.$activeCard.find(">:first-child").contents());
     let cardText = $(this.firstElementChild).text().trim();
     let cardInput = $(`
     <form class="edit-card-form">
@@ -286,6 +285,21 @@ const jtrello = (function() {
     });
   }
 
+  function restoreCards() {
+    if (JSON.parse(localStorage.getItem('cards'))) {
+      const cardData = JSON.parse(localStorage.getItem('cards'));
+
+      $.each(cardData, (index, value) => {
+        console.log(index);
+        console.log(value);
+        let listSpan = $("span").filter(function() { return ($(this).text() === index) });
+        let listObject = $(listSpan).closest('.list').find('li.add-new');
+        newCard(value, listObject);
+      });
+
+    };
+  }
+
   // Metod för att rita ut element i DOM:en
   function render() {}
 
@@ -298,10 +312,10 @@ const jtrello = (function() {
     captureDOMEls();
     createTabs();
     createDialogs();
-    setupBoard();
     restoreLists();
+    restoreCards();
+    setupBoard();
     bindEvents();
-    // restoreCards();
   }
 
   // All kod här
