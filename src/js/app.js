@@ -262,9 +262,18 @@ const jtrello = (function() {
   }
 
   function deleteCard() {
+    let listName = $(this).closest('.list').find('.list-title').text();
+    let cardName = $(this).closest('.card').find('.card-content').text();
     $(this).closest('.card').remove();
     let localCards = JSON.parse(localStorage.getItem('cards'));
-    console.log(localCards);
+    $.each(localCards, (index, value) => {
+      if (index === listName && value === cardName) {
+        console.log(localCards);
+        delete localCards[index];
+        console.log(localCards);
+        localStorage.setItem('cards', JSON.stringify(localCards));
+      }
+    })
   }
 
   function showCard(event) {
