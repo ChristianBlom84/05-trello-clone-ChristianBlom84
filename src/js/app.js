@@ -62,37 +62,6 @@ const jtrello = (function() {
 
     $('.list').last().bgcolor();
 
-    // var droppableParent;
-	
-    // $('.list').draggable({
-    //   revert: 'invalid',
-    //   revertDuration: 200,
-    //   start: function () {
-    //     droppableParent = $(this).parent();
-      
-    //     $(this).addClass('being-dragged');
-    //   },
-    //   stop: function () {
-    //     $(this).removeClass('being-dragged');
-    //   }
-    // });
-	
-    // $('.column').droppable({
-    //   tolerance: 'touch',
-    //   hoverClass: 'drop-hover',
-    //   drop: function (event, ui) {
-    //     var draggable = $(ui.draggable[0]),
-    //       draggableOffset = draggable.offset(),
-    //       container = $(event.target),
-    //       containerOffset = container.offset();
-        
-    //     $('.list', event.target).appendTo(droppableParent).css({opacity: 0}).animate({opacity: 1}, 200);
-        
-    //     draggable.appendTo(container).css({left: draggableOffset.left - containerOffset.left, top: draggableOffset.top - containerOffset.top}).animate({left: 0, top: 0}, 200);
-    //   }
-    // });
-  
-
     $('.list-cards').sortable({
       connectWith: '.list-cards'
     });
@@ -197,6 +166,7 @@ const jtrello = (function() {
 
   function createList(event) {
     event.preventDefault();
+    let inputContent = $(this).find('input');
     $('#list-creation-dialog')
       .dialog("close");
     let listName = this.elements[0].value;
@@ -205,6 +175,7 @@ const jtrello = (function() {
     setupBoard();
     rebindEvents(event);
     if (listName) {
+      inputContent.val('');
       listsArray.push(listName);
       localStorage.setItem("lists", JSON.stringify(listsArray));
     }
@@ -214,7 +185,6 @@ const jtrello = (function() {
     let deletedList = $(this).prev('.list-title').text();
     $(this).closest('.column').remove();
     let localLists = JSON.parse(localStorage.getItem('lists'));
-    console.log(localLists);
     for (let i = 0; i < localLists.length; i++) {
       if (localLists[i] === deletedList) {
         localLists.splice(i, 1);
@@ -268,9 +238,7 @@ const jtrello = (function() {
     let localCards = JSON.parse(localStorage.getItem('cards'));
     $.each(localCards, (index, value) => {
       if (index === listName && value === cardName) {
-        console.log(localCards);
         delete localCards[index];
-        console.log(localCards);
         localStorage.setItem('cards', JSON.stringify(localCards));
       }
     })
@@ -299,25 +267,18 @@ const jtrello = (function() {
       const cardData = JSON.parse(localStorage.getItem('cards'));
 
       $.each(cardData, (index, value) => {
-        console.log(index);
-        console.log(value);
         let listSpan = $("span").filter(function() { return ($(this).text() === index) });
         let listObject = $(listSpan).closest('.list').find('li.add-new');
         newCard(value, listObject);
       });
-
     };
+    // TODO: Restore deadline date as well.
   }
-
-  // Metod för att rita ut element i DOM:en
-  function render() {}
 
   /* =================== Publika metoder nedan ================== */
 
   // Init metod som körs först
   function init() {
-    console.log(':::: Initializing JTrello ::::');
-    // Förslag på privata metoder
     captureDOMEls();
     createTabs();
     createDialogs();
@@ -326,8 +287,6 @@ const jtrello = (function() {
     setupBoard();
     bindEvents();
   }
-
-  // All kod här
 
   return {
     init: init
