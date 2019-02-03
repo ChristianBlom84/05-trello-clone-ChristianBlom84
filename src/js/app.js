@@ -17,7 +17,7 @@ const jtrello = (function() {
   let DOM = {};
   
   let listsArray = localStorage.getItem('lists') ? JSON.parse(localStorage.getItem('lists')) : [];
-  let cardsArray = localStorage.getItem('cards') ? JSON.parse(localStorage.getItem('cards')) : [];
+  let cardsObject = localStorage.getItem('cards') ? JSON.parse(localStorage.getItem('cards')) : {};
 
   /* =================== Privata metoder nedan ================= */
   
@@ -129,7 +129,6 @@ const jtrello = (function() {
         show: 'blind',
         close: function() {
           $('#tabs-1').empty();
-          // $('#tabs-2').empty();
         }
       })
   }
@@ -210,7 +209,6 @@ const jtrello = (function() {
       listsArray.push(listName);
       localStorage.setItem("lists", JSON.stringify(listsArray));
     }
-    console.log(localStorage.getItem("lists"));
   }
 
   function deleteList(event) {
@@ -228,19 +226,16 @@ const jtrello = (function() {
   }
 
   function restoreLists() {
-    if (localStorage.getItem('lists')) {
+    if (JSON.parse(localStorage.getItem('lists'))) {
       const listData = JSON.parse(localStorage.getItem('lists'));
       listData.forEach(list => {
         newList(list);
-      })
+      });
     }
   }
 
   /* =========== Metoder för att hantera kort i listor nedan =========== */
-  function createCard(event) {
-    event.preventDefault();
-    let inputContent = $(this).find('input');
-    let cardName = this.elements[0].value;
+  function newCard(cardName) {
     let newCard = `
     <li class="card">
       <span class="card-content">${cardName}</span>
@@ -250,7 +245,20 @@ const jtrello = (function() {
 
     if (cardName) {
       $(this).closest('li').before(newCard);
+      rebindEvents();
+    }
+  }
+  
+  function createCard(event) {
+    event.preventDefault();
+    let inputContent = $(this).find('input');
+    let cardName = this.elements[0].value;
+    newCard(cardName);
+    if (cardName) {
       $(this).find('input').val('');
+      console.log($(this).closest('.list').find('.list-title'));
+      // cardsObject.listName
+      localStorage.setItem("cards", JSON.stringify(cardsObject));
     }
     rebindEvents(event);
   }
