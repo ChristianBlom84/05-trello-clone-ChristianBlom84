@@ -149,7 +149,9 @@ const jtrello = (function() {
   }
 
   function rebindEvents(event) {
+    $('.list-header > button.delete').unbind();
     $('.list-header > button.delete').on('click', deleteList);
+    $('.card > button.delete').unbind('click', deleteCard);
     $('.card > button.delete').on('click', deleteCard);
     $('form.new-card').unbind();
     $('form.new-card').on('submit', createCard);
@@ -169,7 +171,7 @@ const jtrello = (function() {
     <div class="column">
       <div class="list">
           <div class="list-header">
-              ${listName}
+              <span class="list-title">${listName}</span>
               <button class="button delete">X</button>
           </div>
           <ul class="list-cards">
@@ -211,8 +213,18 @@ const jtrello = (function() {
     console.log(localStorage.getItem("lists"));
   }
 
-  function deleteList() {
+  function deleteList(event) {
+    let deletedList = $(this).prev('.list-title').text();
     $(this).closest('.column').remove();
+    let localLists = JSON.parse(localStorage.getItem('lists'));
+    console.log(localLists);
+    for (let i = 0; i < localLists.length; i++) {
+      if (localLists[i] === deletedList) {
+        localLists.splice(i, 1);
+        localStorage.setItem('lists', JSON.stringify(localLists));
+        break;
+      };
+    };
   }
 
   function restoreLists() {
